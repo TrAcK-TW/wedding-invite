@@ -13,8 +13,17 @@ import bgmFile from './assets/wedding-bgm.mp3';
 const galleryPhotos = [photo2, photo3, photo4, photo5, photo6];
 
 function App() {
+  const [isOpened, setIsOpened] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(null);
+
+  const handleOpenInvitation = () => {
+    setIsOpened(true);
+    setIsPlaying(true);
+    if (audioRef.current) {
+      audioRef.current.play();
+    }
+  };
 
   const toggleAudio = () => {
     if (isPlaying) {
@@ -70,7 +79,6 @@ function App() {
     return days;
   };
 
-  // --- 輪播圖 (無限滑動) 邏輯 ---
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
@@ -100,19 +108,43 @@ function App() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto tracking-wide overflow-hidden bg-white shadow-2xl relative font-sans">
+    /* 🌟 修正 1：在這裡加入條件判斷。如果還沒打開信封，就鎖定整個網頁的高度 (h-[100dvh])，防止往下捲動 */
+    <div className={`w-full max-w-md mx-auto tracking-wide bg-white shadow-2xl relative font-sans ${isOpened ? 'overflow-hidden' : 'h-[100dvh] overflow-hidden'}`}>
       
-      {/* 👇 1. 將 src 替換為剛剛引入的 bgmFile */}
+      {/* ========================================= */}
+      {/* 🌟 修正 2：前導信封頁 (固定在最上方，高度剛好等於螢幕) */}
+      {/* ========================================= */}
+      <div className={`absolute top-0 left-0 w-full h-[100dvh] z-[100] flex flex-col items-center justify-center bg-[#f9f9f7] transition-all duration-[1200ms] ease-[cubic-bezier(0.7,0,0.3,1)] ${isOpened ? '-translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}>
+        
+        <div className="border border-gray-200 p-12 flex flex-col items-center relative bg-white shadow-sm w-[80%] max-w-[300px]">
+          <p className="text-[9px] tracking-[0.4em] text-gray-400 mb-8 font-light">WEDDING INVITATION</p>
+          
+          <h1 className="text-2xl font-serif tracking-widest leading-loose font-light text-[#1a1a1a] text-center mb-8">
+            TRACK<br/>
+            <span className="text-sm text-gray-300 italic block my-1 font-light">&</span>
+            BECCA
+          </h1>
+          
+          <p className="text-xl tracking-widest text-gray-500 font-serif">2026.12.12</p>
+
+          <button 
+            onClick={handleOpenInvitation}
+            className="absolute -bottom-7 w-14 h-14 bg-[#1a1a1a] text-white rounded-full flex items-center justify-center text-[9px] tracking-[0.2em] hover:scale-105 transition-transform shadow-xl font-light cursor-pointer"
+          >
+            OPEN
+          </button>
+        </div>
+      </div>
+      {/* ========================================= */}
+
       <audio ref={audioRef} src={bgmFile} loop />
 
       {/* --- 全域字體與音樂播放器設定 --- */}
       <div className="fixed top-4 right-4 z-50 max-w-md">
         <style>
           {`
-            /* 載入韓系文創風英文字體 */
             @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Montserrat:wght@200;300;400;500&display=swap');
 
-            /* 強制覆蓋字體設定：英文優先，中文使用微軟正黑體 */
             .font-sans {
               font-family: 'Montserrat', 'Microsoft JhengHei', '微軟正黑體', sans-serif !important;
             }
@@ -151,17 +183,13 @@ function App() {
           </button>
           <div className="overflow-hidden flex-1 ml-2 mr-2 relative h-5 marquee-mask flex items-center">
             <div className={`whitespace-nowrap text-[11px] text-gray-800 tracking-wider font-medium absolute w-full animate-marquee ${!isPlaying ? 'pause-animation' : ''}`}>
-              {/* 👇 2. 這裡改成你們的歌名！ */}
               PRYVT - blue salvia
             </div>
           </div>
         </div>
       </div>
 
-
-      {/* ========================================= */}
-      {/* 第一頁：TRACK & BECCA (純白) */}
-      {/* ========================================= */}
+      {/* 第一頁：TRACK & BECCA */}
       <section className="relative min-h-[100dvh] flex flex-col items-center justify-center bg-white text-[#1a1a1a] px-8 text-center border-b border-gray-100">
         <p className="text-[10px] tracking-[0.4em] text-gray-400 mb-8 font-light">WE ARE GETTING MARRIED</p>
         <h1 className="text-4xl font-serif tracking-widest leading-relaxed">
@@ -172,58 +200,39 @@ function App() {
         <div className="mt-16 w-[1px] h-20 bg-gray-300"></div>
       </section>
 
-
-      {/* ========================================= */}
-      {/* 第二頁：婚禮時間與地點 (拉開上下佈局，露出人物) */}
-      {/* ========================================= */}
+      {/* 第二頁：婚禮時間與地點 */}
       <section className="relative min-h-[100dvh] flex flex-col justify-between items-center text-white py-16 px-10 text-center overflow-hidden">
-        
-        {/* 背景圖片與暗色遮罩 */}
         <div className="absolute inset-0 z-0">
           <img src={photo1} alt="Save the date 背景" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/40"></div> 
         </div>
-
-        {/* 上方區塊：日期 */}
         <div className="relative z-10 flex flex-col items-center mt-4">
           <p className="text-[10px] tracking-[0.4em] text-gray-300 mb-6 drop-shadow-md font-light">SAVE THE DATE</p>
           <p className="text-4xl font-serif tracking-widest drop-shadow-lg">2026.12.12</p>
         </div>
-
-        {/* 下方區塊：地點與時間 (移除黑色框框) */}
         <div className="relative z-10 flex flex-col items-center w-full max-w-[280px] mb-4">
-          
           <div className="w-12 border-t border-white/50 mb-6 shadow-sm"></div>
-          
           <h3 className="text-xl tracking-widest mb-2 font-medium drop-shadow-md">晶麒莊園</h3>
           <p className="text-sm tracking-widest text-gray-200 font-light mb-10 drop-shadow-md">露那廳</p>
-          
-          {/* 無框時程表，純粹用底線與文字陰影呈現 */}
           <div className="w-full space-y-5">
             <div className="flex justify-between items-center border-b border-white/20 pb-4">
               <span className="text-xs font-light tracking-[0.2em] text-gray-200 drop-shadow-md">證婚時間</span>
               <span className="text-sm font-serif tracking-wider text-white drop-shadow-md">16:00 - 16:45</span>
             </div>
-            
             <div className="flex justify-between items-center border-b border-white/20 pb-4">
               <span className="text-xs font-light tracking-[0.2em] text-gray-200 drop-shadow-md">入席時間</span>
               <span className="text-sm font-serif tracking-wider text-white drop-shadow-md">17:00</span>
             </div>
-            
             <div className="flex justify-between items-center">
               <span className="text-xs font-light tracking-[0.2em] text-gray-200 drop-shadow-md">開席時間</span>
               <span className="text-sm font-serif tracking-wider text-white drop-shadow-md">18:00</span>
             </div>
           </div>
-
         </div>
       </section>
 
-      {/* ========================================= */}
-      {/* 第三頁：地圖與導航連結 (純白) */}
-      {/* ========================================= */}
+      {/* 第三頁：地圖與導航連結 */}
       <section className="relative min-h-[100dvh] flex flex-col bg-white text-[#1a1a1a]">
-        
         <div className="w-full h-[55vh] relative bg-gray-100 overflow-hidden border-b border-gray-200">
           <iframe 
             src="https://maps.google.com/maps?q=晶麒莊園&t=&z=15&ie=UTF8&iwloc=&output=embed" 
@@ -234,89 +243,45 @@ function App() {
             referrerPolicy="no-referrer-when-downgrade"
             title="晶麒莊園地圖"
           ></iframe>
-          
           <div className="absolute inset-0 pointer-events-none"></div>
         </div>
-        
         <div className="flex-1 flex flex-col items-center justify-center px-8 text-center pt-8 pb-12">
           <p className="text-[10px] tracking-[0.3em] text-gray-400 mb-6 font-light">LOCATION</p>
           <p className="text-xs text-gray-600 tracking-widest leading-relaxed mb-8">
             324 桃園市平鎮區高雙里<br/>復旦路四段116巷51號
           </p>
-          
           <div className="flex flex-col gap-3 w-full max-w-[250px]">
-            <a 
-              href="https://www.google.com/maps/search/?api=1&query=晶麒莊園+桃園市平鎮區高雙里復旦路四段116巷51號" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="w-full bg-[#1a1a1a] text-white py-3 rounded text-xs tracking-widest hover:bg-gray-800 transition-colors font-light"
-            >
-              Google Map 導航
-            </a>
-            <a 
-              href="http://maps.apple.com/?q=晶麒莊園&address=桃園市平鎮區高雙里復旦路四段116巷51號"
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="w-full border border-gray-300 text-gray-700 py-3 rounded text-xs tracking-widest hover:bg-gray-50 transition-colors font-light"
-            >
-              Apple Map 導航
-            </a>
+            <a href="https://www.google.com/maps/search/?api=1&query=晶麒莊園+桃園市平鎮區高雙里復旦路四段116巷51號" target="_blank" rel="noopener noreferrer" className="w-full bg-[#1a1a1a] text-white py-3 rounded text-xs tracking-widest hover:bg-gray-800 transition-colors font-light">Google Map 導航</a>
+            <a href="http://maps.apple.com/?q=晶麒莊園&address=桃園市平鎮區高雙里復旦路四段116巷51號" target="_blank" rel="noopener noreferrer" className="w-full border border-gray-300 text-gray-700 py-3 rounded text-xs tracking-widest hover:bg-gray-50 transition-colors font-light">Apple Map 導航</a>
           </div>
         </div>
       </section>
 
-      {/* ========================================= */}
-      {/* 第四頁：無限輪迴婚紗照 (深灰) */}
-      {/* ========================================= */}
+      {/* 第四頁：無限輪迴婚紗照 */}
       <section className="relative min-h-[100dvh] flex flex-col bg-[#1a1a1a] text-white py-16 overflow-hidden">
         <p className="text-center text-[10px] tracking-[0.3em] text-gray-500 mb-10 font-light">GALLERY</p>
-        
         <div className="relative w-full flex-1 flex items-center justify-center">
-          <div 
-            className="w-full h-full relative overflow-hidden"
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEndHandler}
-          >
-            <div 
-              className="flex w-full h-[70vh] transition-transform duration-500 ease-out"
-              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-            >
+          <div className="w-full h-full relative overflow-hidden" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEndHandler}>
+            <div className="flex w-full h-[70vh] transition-transform duration-500 ease-out" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
               {galleryPhotos.map((photo, index) => (
                 <div key={index} className="w-full h-full flex-shrink-0 px-6">
-                  <img 
-                    src={photo} 
-                    alt={`婚紗照 ${index + 1}`} 
-                    className="w-full h-full object-cover rounded-md shadow-2xl"
-                  />
+                  <img src={photo} alt={`婚紗照 ${index + 1}`} className="w-full h-full object-cover rounded-md shadow-2xl" />
                 </div>
               ))}
             </div>
           </div>
-
-          <button onClick={prevSlide} className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/30 rounded-full text-white/50 hover:text-white backdrop-blur-sm z-10">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 19l-7-7 7-7"></path></svg>
-          </button>
-          <button onClick={nextSlide} className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/30 rounded-full text-white/50 hover:text-white backdrop-blur-sm z-10">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path></svg>
-          </button>
+          <button onClick={prevSlide} className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/30 rounded-full text-white/50 hover:text-white backdrop-blur-sm z-10"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 19l-7-7 7-7"></path></svg></button>
+          <button onClick={nextSlide} className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/30 rounded-full text-white/50 hover:text-white backdrop-blur-sm z-10"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path></svg></button>
         </div>
-
         <div className="flex justify-center gap-2 mt-8">
           {galleryPhotos.map((_, index) => (
-            <div 
-              key={index} 
-              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${currentSlide === index ? 'bg-white w-4' : 'bg-gray-600'}`}
-            />
+            <div key={index} className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${currentSlide === index ? 'bg-white w-4' : 'bg-gray-600'}`} />
           ))}
         </div>
       </section>
 
-      {/* ========================================= */}
-      {/* 第五頁：倒數計時與日曆 (純白) */}
-      {/* ========================================= */}
+      {/* 第五頁：倒數計時與日曆 */}
       <section className="relative min-h-[100dvh] flex flex-col items-center justify-center bg-white text-[#1a1a1a] p-8 space-y-16">
-        
         <div className="text-center w-full">
           <p className="text-[10px] tracking-[0.3em] text-gray-400 mb-8 font-light">COUNTDOWN</p>
           <div className="flex justify-center gap-4 text-2xl font-light">
@@ -329,9 +294,7 @@ function App() {
             <div className="flex flex-col items-center w-12"><span className="text-4xl font-serif">{timeLeft.seconds}</span><span className="text-[9px] tracking-wider text-gray-400 mt-2">SECS</span></div>
           </div>
         </div>
-
         <div className="w-12 border-t border-gray-200"></div>
-
         <div className="text-center w-full">
           <h2 className="text-2xl mb-8 font-serif tracking-widest text-gray-800">2026 . 12</h2>
           <div className="grid grid-cols-7 gap-y-6 gap-x-2 text-xs text-gray-400 mb-4 font-light tracking-widest">
@@ -343,15 +306,12 @@ function App() {
         </div>
       </section>
 
-      {/* ========================================= */}
-      {/* 第六頁：期待相見 (滿版照片+遮罩，深色系) */}
-      {/* ========================================= */}
+      {/* 第六頁：期待相見 */}
       <section className="relative min-h-[100dvh] flex flex-col items-center justify-center text-white">
         <div className="absolute inset-0 z-0">
           <img src={heroImg} alt="期待相見背景" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/60"></div>
         </div>
-        
         <div className="relative z-10 flex flex-col items-center text-center px-8">
           <p className="text-lg tracking-[0.3em] font-light leading-loose mb-12 drop-shadow-md">
             期待那一天，<br/>
