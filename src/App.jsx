@@ -221,7 +221,7 @@ function App() {
             </div>
             <div className="flex justify-between items-center border-b border-white/20 pb-4">
               <span className="text-xs font-light tracking-[0.2em] text-gray-200 drop-shadow-md">入席時間</span>
-              <span className="text-sm font-serif tracking-wider text-white drop-shadow-md">17:00</span>
+              <span className="text-sm font-serif tracking-wider text-white drop-shadow-md">17:30</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-xs font-light tracking-[0.2em] text-gray-200 drop-shadow-md">開席時間</span>
